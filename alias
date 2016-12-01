@@ -2,7 +2,6 @@
 
 whoami = sts get-caller-identity
 
-
 create-assume-role =
   !f() {
     aws iam create-role --role-name "${1}" \
@@ -16,3 +15,30 @@ create-assume-role =
           \"Version\":\"2012-10-17\"\
         }";
   }; f
+
+
+running-instances = ec2 describe-instances \
+    --filter Name=instance-state-name,Values=running \
+    --output table \
+    --query 'Reservations[].Instances[].{ID: InstanceId,Hostname: PublicDnsName,Name: Tags[?Key==`Name`].Value | [0],Type: InstanceType, Platform: Platform || `Linux`}'
+
+ebs-volumes= ec2 describe-volumes \
+    --query 'Volumes[].{VolumeId: VolumeId,State: State,Size: Size,Name: Tags[0].Value,AZ: AvailabilityZone}' \
+    --output table
+
+amazon-linux-amis = ec2 describe-images \
+    --filter \
+      Name=owner-alias,Values=amazon \
+      Name=name,Values="amzn-ami-hvm-*" \
+      Name=architecture,Values=x86_64 \
+      Name=virtualization-type,Values=hvm \
+      Name=root-device-type,Values=ebs \
+      Name=block-device-mapping.volume-type,Values=gp2 \
+    --query "reverse(sort_by(Images, &CreationDate))[*].[ImageId,Name,Description]" \
+    --output text
+
+list-sgs = ec2 describe-security-groups --query "SecurityGroups[].[GroupId, GroupName]" --output text
+
+sg-rules = !f() { aws ec2 describe-security-groups \
+    --query "SecurityGroups[].IpPermissions[].[FromPort,ToPort,IpProtocol,join(',',IpRanges[].CidrIp)]" \
+    --group-id "$1" --output text; }; f
