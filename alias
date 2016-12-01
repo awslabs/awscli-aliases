@@ -1,3 +1,18 @@
 [toplevel]
 
 whoami = sts get-caller-identity
+
+
+create-assume-role =
+  !f() {
+    aws iam create-role --role-name "${1}" \
+      --assume-role-policy-document \
+        "{\"Statement\":[{\
+            \"Action\":\"sts:AssumeRole\",\
+            \"Effect\":\"Allow\",\
+            \"Principal\":{\"Service\":\""${2}".amazonaws.com\"},\
+            \"Sid\":\"\"\
+          }],\
+          \"Version\":\"2012-10-17\"\
+        }";
+  }; f
