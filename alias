@@ -1,0 +1,3 @@
+[toplevel]
+
+whoami = sts get-caller-identity
