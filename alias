@@ -48,3 +48,9 @@ authorize-my-ip =
     ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
     aws ec2 authorize-security-group-ingress --group-id ${1} --cidr $ip/32 --protocol tcp --port 22
   }; f
+
+get-group-id = 
+  !f() {
+    aws ec2 describe-security-groups --filters Name=group-name,Values=${1} --query SecurityGroups[0].GroupId --output text
+  }; f
+
