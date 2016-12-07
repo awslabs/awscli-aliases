@@ -54,3 +54,8 @@ get-group-id =
     aws ec2 describe-security-groups --filters Name=group-name,Values=${1} --query SecurityGroups[0].GroupId --output text
   }; f
 
+authorize-my-ip-by-name =
+  !f() {
+    group_id=$(aws get-group-id "${1}")
+    aws authorize-my-ip "$group_id"
+  }; f
