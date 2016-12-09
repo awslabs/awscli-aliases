@@ -47,3 +47,9 @@ tostring_with_jq =
   !f() {
     cat "${1}" | jq 'tostring'
   }; f
+
+tostring_with_jp = 
+  !f() {
+    jp -f "${1}" 'to_string(@)'
+  }; f
+
