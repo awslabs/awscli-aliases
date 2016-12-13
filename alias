@@ -43,12 +43,12 @@ sg-rules = !f() { aws ec2 describe-security-groups \
     --query "SecurityGroups[].IpPermissions[].[FromPort,ToPort,IpProtocol,join(',',IpRanges[].CidrIp)]" \
     --group-id "$1" --output text; }; f
 
-tostring_with_jq =
+tostring-with-jq =
   !f() {
     cat "${1}" | jq 'tostring'
   }; f
 
-tostring_with_jp = 
+tostring-with-jp = 
   !f() {
     jp -f "${1}" 'to_string(@)'
   }; f
