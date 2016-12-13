@@ -53,3 +53,5 @@ tostring-with-jp =
     jp -f "${1}" 'to_string(@)'
   }; f
 
+# List or set your region
+region = !f() { [[ $# -eq 1 ]] && aws configure set region "$1" || aws configure get region; }; f
