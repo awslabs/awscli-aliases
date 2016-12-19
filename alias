@@ -49,7 +49,7 @@ authorize-my-ip =
     aws ec2 authorize-security-group-ingress --group-id ${1} --cidr $ip/32 --protocol tcp --port 22
   }; f
 
-get-group-id = 
+get-group-id =
   !f() {
     aws ec2 describe-security-groups --filters Name=group-name,Values=${1} --query SecurityGroups[0].GroupId --output text
   }; f
@@ -88,4 +88,11 @@ find-access-key = !f() {
     if [ -z "${result}" ]; then
       printf "\r%sKey not found." "${clear_to_eol}"
     fi
+  }; f
+
+docker-ecr-login =
+  !f() {
+    endpoint=$(aws ecr get-authorization-token --region us-east-1 --output text --query authorizationData[].proxyEndpoint)
+    passwd=$(aws ecr get-authorization-token --region us-east-1 --output text --query authorizationData[].authorizationToken | base64 -d | cut -d: -f2)
+    docker login -u AWS -p $passwd -e none $endpoint
   }; f
