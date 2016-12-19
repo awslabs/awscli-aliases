@@ -92,7 +92,8 @@ find-access-key = !f() {
 
 docker-ecr-login =
   !f() {
-    endpoint=$(aws ecr get-authorization-token --region us-east-1 --output text --query authorizationData[].proxyEndpoint)
-    passwd=$(aws ecr get-authorization-token --region us-east-1 --output text --query authorizationData[].authorizationToken | base64 -d | cut -d: -f2)
+    region=$(aws configure get region)
+    endpoint=$(aws ecr get-authorization-token --region $region --output text --query authorizationData[].proxyEndpoint)
+    passwd=$(aws ecr get-authorization-token --region $region --output text --query authorizationData[].authorizationToken | base64 -d | cut -d: -f2)
     docker login -u AWS -p $passwd -e none $endpoint
   }; f
