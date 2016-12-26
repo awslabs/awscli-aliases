@@ -55,7 +55,7 @@ tostring-with-jq =
 
 authorize-my-ip =
   !f() {
-    ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
+    ip=$(aws myip)
     aws ec2 authorize-security-group-ingress --group-id ${1} --cidr $ip/32 --protocol tcp --port 22
   }; f
 
@@ -100,7 +100,6 @@ find-access-key = !f() {
     fi
   }; f
 
-
 docker-ecr-login =
   !f() {
     region=$(aws configure get region)
@@ -109,26 +108,29 @@ docker-ecr-login =
     docker login -u AWS -p $passwd $endpoint
   }; f
 
+myip =
+  !f() {
+    dig +short myip.opendns.com @resolver1.opendns.com
+  }; f
+
 allow-my-ip =
   !f() {
-    my_ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
+    my_ip=$(aws myip)
     aws ec2 authorize-security-group-ingress --group-name ${1} --protocol ${2} --port ${3} --cidr $my_ip/32
   }; f
 
 revoke-my-ip =
   !f() {
-    my_ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
+    my_ip=$(aws myip)
     aws ec2 revoke-security-group-ingress --group-name ${1} --protocol ${2} --port ${3} --cidr $my_ip/32
   }; f
 
 allow-my-ip-all =
   !f() {
-    my_ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
-    aws ec2 authorize-security-group-ingress --group-name ${1} --protocol all --port all --cidr $my_ip/32
+    aws allow-my-ip ${1} all all
   }; f
 
 revoke-my-ip-all =
   !f() {
-    my_ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
-    aws ec2 revoke-security-group-ingress --group-name ${1} --protocol all --port all --cidr $my_ip/32
+    aws revoke-my-ip ${1} all all
   }; f
