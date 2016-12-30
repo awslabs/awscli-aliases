@@ -43,7 +43,7 @@ sg-rules = !f() { aws ec2 describe-security-groups \
     --query "SecurityGroups[].IpPermissions[].[FromPort,ToPort,IpProtocol,join(',',IpRanges[].CidrIp)]" \
     --group-id "$1" --output text; }; f
 
-tostring = 
+tostring =
   !f() {
     jp -f "${1}" 'to_string(@)'
   }; f
@@ -55,7 +55,7 @@ tostring-with-jq =
 
 authorize-my-ip =
   !f() {
-    ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
+    ip=$(aws myip)
     aws ec2 authorize-security-group-ingress --group-id ${1} --cidr $ip/32 --protocol tcp --port 22
   }; f
 
@@ -106,4 +106,31 @@ docker-ecr-login =
     endpoint=$(aws ecr get-authorization-token --region $region --output text --query authorizationData[].proxyEndpoint)
     passwd=$(aws ecr get-authorization-token --region $region --output text --query authorizationData[].authorizationToken | base64 --decode | cut -d: -f2)
     docker login -u AWS -p $passwd $endpoint
+  }; f
+
+myip =
+  !f() {
+    dig +short myip.opendns.com @resolver1.opendns.com
+  }; f
+
+allow-my-ip =
+  !f() {
+    my_ip=$(aws myip)
+    aws ec2 authorize-security-group-ingress --group-name ${1} --protocol ${2} --port ${3} --cidr $my_ip/32
+  }; f
+
+revoke-my-ip =
+  !f() {
+    my_ip=$(aws myip)
+    aws ec2 revoke-security-group-ingress --group-name ${1} --protocol ${2} --port ${3} --cidr $my_ip/32
+  }; f
+
+allow-my-ip-all =
+  !f() {
+    aws allow-my-ip ${1} all all
+  }; f
+
+revoke-my-ip-all =
+  !f() {
+    aws revoke-my-ip ${1} all all
   }; f
