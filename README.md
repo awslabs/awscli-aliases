@@ -41,3 +41,13 @@ command:
     "Arn": "arn:aws:iam::012345678901:user/myuser"
 }
 ```
+
+## Dependencies
+
+### tostring alias
+The tostring alias requires to have the jp command installed.  
+For installing the command line interface for JMESPath (jp), please see the README.md at https://github.com/jmespath/jp
+
+### tostring-with-jq alias
+The tostring-with-jq alias requires to have the jq command installed.  
+For installing the Command-line JSON processor (jq), please see this page: https://stedolan.github.io/jq/download/
