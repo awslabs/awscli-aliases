@@ -134,3 +134,18 @@ revoke-my-ip-all =
   !f() {
     aws revoke-my-ip ${1} all all
   }; f
+
+
+get-dns-from-instance-id =
+  !f() {
+    aws ec2 describe-instances \
+    --instance-ids "${1}" \
+    --query 'Reservations[*].Instances[*][PublicDnsName,InstanceId]' --output text | cut -f1
+  }; f
+
+get-instance-id-from-dns =
+  !f() {
+    aws ec2 describe-instances \
+    --filters "Name=dns-name,Values=${1}" \
+    --query 'Reservations[*].Instances[*][InstanceId,PublicDnsName]' --output text | cut -f1
+  }; f
