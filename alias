@@ -139,3 +139,8 @@ get-vpc-id-by-name =
   !f() {
       aws ec2 describe-vpcs --filter "Name=tag:Name,Values=${1}" --query 'Vpcs[*].{id:VpcId}' --output text
   }; f
+
+get-vpc-name-by-id =
+  !f() {
+      aws ec2 describe-vpcs --filter "Name=vpc-id,Values=${1}" --query 'Vpcs[*].Tags[].Value' --output text
+  }; f
