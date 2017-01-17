@@ -72,6 +72,7 @@ authorize-my-ip-by-name =
 
 # list all security group port ranges open to 0.0.0.0/0
 public-ports = ec2 describe-security-groups \
+  --output table \
   --filters Name=ip-permission.cidr,Values=0.0.0.0/0 \
   --query 'SecurityGroups[].{
     GroupName:GroupName,
