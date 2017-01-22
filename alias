@@ -134,3 +134,37 @@ revoke-my-ip-all =
   !f() {
     aws revoke-my-ip ${1} all all
   }; f
+
+codebuild-get-latest-id =
+  !f() {
+    if [ "${1}" == "" ]; then
+      echo "Please enter the codebuild project name"
+      exit 1
+    else
+      project_name="${1}"
+    fi
+    aws codebuild list-builds-for-project \
+      --project-name ${project_name} --query 'ids[0]' --output text |cut -d: -f2
+  }; f
+
+
+codebuild-tail-log =
+  !f() {
+    if [ "${1}" == "" ]; then
+      echo "Please enter the codebuild project name"
+      exit 1
+    else
+      log_group_name="/aws/codebuild/${1}"
+    fi
+    if [ "${2}" == "" ]; then
+      echo "Getting the latest build id for codebuild project name ${1}"
+      log_stream_name=$(aws codebuild-get-latest-id ${1})
+      echo "latest build id/log stream name=${log_stream_name}"
+    else
+      log_stream_name="${2}"
+    fi
+    aws logs get-log-events \
+      --log-group-name ${log_group_name} \
+      --log-stream-name ${log_stream_name} \
+      --output text | cut  -f3- | sed  '/^$/d'
+  }; f
