@@ -134,3 +134,23 @@ revoke-my-ip-all =
   !f() {
     aws revoke-my-ip ${1} all all
   }; f
+
+get-codebuild-build-log =
+  !f() {
+    if [ "${1}" == "" ]; then
+      echo "Please enter the codebuild project name"
+      exit 1
+    else
+      log_group_name="/aws/codebuild/${1}"
+    fi
+    if [ "${2}" == "" ]; then
+      echo "Please enter the codebuild build id"
+      exit 1
+    else
+      log_stream_name="${2}"
+    fi
+    aws logs get-log-events \
+      --log-group-name ${log_group_name} \
+      --log-stream-name ${log_stream_name} \
+      --output text | cut  -f3- | sed  '/^$/d' | less
+  }; f
