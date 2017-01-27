@@ -134,3 +134,8 @@ revoke-my-ip-all =
   !f() {
     aws revoke-my-ip ${1} all all
   }; f
+
+list-all-regions =
+  !f() {
+    aws ec2 describe-regions --query "Regions[].RegionName" --output text
+  }; f
