@@ -108,6 +108,21 @@ docker-ecr-login =
     docker login -u AWS -p $passwd $endpoint
   }; f
 
+docker-repo-uri =
+  !f() {
+    oargs=($(ps -o args= $PPID | cut -d' ' -f 3-))
+    for i in "${!oargs[@]}"; do
+      if [[ "${oargs[$i]}" == "--region" ]]; then
+        region="--region ${oargs[$i+1]}"
+      elif [[ "${oargs[$i]}" == "--profile" ]]; then
+        profile="--profile ${oargs[$i+1]}"
+      fi
+    done
+    aws ecr $region $profile \
+    describe-repositories --output text \
+    --query "repositories[?repositoryName == '${1}'].repositoryUri"
+  }; f
+
 myip =
   !f() {
     dig +short myip.opendns.com @resolver1.opendns.com
