@@ -1,0 +1,3 @@
+#!/bin/sh
+
+install -D $(dirname $0)/alias ~/.aws/cli/alias
