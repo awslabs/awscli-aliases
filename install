@@ -1,3 +1,5 @@
 #!/bin/sh
 
-install -D $(dirname $0)/alias ~/.aws/cli/alias
+DEST=~/.aws/cli
+mkdir -p $DEST 
+cp $(dirname $0)/alias $DEST/alias
