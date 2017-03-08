@@ -82,8 +82,8 @@ public-ports = ec2 describe-security-groups \
       ][]
   }'
 
-# List or set your region
-region = !f() { [[ $# -eq 1 ]] && aws configure set region "$1" || aws configure get region; }; f
+# Show or set your region
+region = !f() { [ $# -eq 1 ] && aws configure set region "$1" || aws configure get region; }; f
 
 find-access-key = !f() {
     clear_to_eol=$(tput el)
