@@ -2,6 +2,11 @@
 
 whoami = sts get-caller-identity
 
+#
+# NOTE: AWS CLI has build-in support for IAM roles so it is not really necessary
+# to build own home-grown solution. See "Using AWS IAM Roles" at
+# http://docs.aws.amazon.com/cli/latest/topic/config-vars.html#cli-aws-help-config-vars 
+#
 # To modify variables in current shell you must define bash functions to call switch-role & forget-role
 # aws-switch-role() {
 #  eval $(aws switch-role $1)
