@@ -134,3 +134,19 @@ revoke-my-ip-all =
   !f() {
     aws revoke-my-ip ${1} all all
   }; f
+
+s3cat =
+  !f() {
+    tmpfile=$(mktemp)
+    aws s3 cp $1 $tmpfile
+    cat "$tmpfile"
+    rm "$tmpfile"
+  }; f
+
+s3head =
+  !f() {
+    tmpfile=$(mktemp)
+    aws s3 cp $1 $tmpfile
+    head -n $2 "$tmpfile"
+    rm "$tmpfile"
+  }; f
