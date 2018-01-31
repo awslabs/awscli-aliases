@@ -135,9 +135,9 @@ revoke-my-ip-all =
     aws revoke-my-ip ${1} all all
   }; f
 
-lambda-last-log =
+last-log =
   !f() {
-    group=/aws/lambda/$1
+    group="$1"
 
     if ! stream="$(aws logs describe-log-streams --log-group-name "$group" \
     --max-items 1 --order-by LastEventTime --descending \
