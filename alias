@@ -134,3 +134,20 @@ revoke-my-ip-all =
   !f() {
     aws revoke-my-ip ${1} all all
   }; f
+
+assume =
+  !f() {
+      res=$(aws sts assume-role --role-arn ${1} --role-session-name session)
+      if echo $res | grep -q AccessKeyId; then
+        echo $res \
+        | jq -r '
+          "","[\(.Credentials.AccessKeyId)]",
+          "aws_access_key_id     = \(.Credentials.AccessKeyId)",
+          "aws_secret_access_key = \(.Credentials.SecretAccessKey)",
+          "aws_session_token     = \(.Credentials.SessionToken)",
+          "aws_security_token    = \(.Credentials.SessionToken)"
+          ' \
+        >> ~/.aws/credentials
+        echo $res | jq -r '"AWS_PROFILE=\(.Credentials.AccessKeyId)"'
+      fi
+  }; f
