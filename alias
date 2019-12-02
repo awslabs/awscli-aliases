@@ -135,8 +135,5 @@ revoke-my-ip-all =
     aws revoke-my-ip ${1} all all
   }; f
 
-ssh =
-  !f() {
-    aws ssm start-session --target "${1}"
-  }; f
+shell = ssm start-session --target
 
