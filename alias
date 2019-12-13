@@ -16,11 +16,35 @@ create-assume-role =
         }";
   }; f
 
+#List all instance 
+list-instances =
+  !f() {
+    if [ -n "$1" ];then
+      echo "Filtering by \`$1\`"
+    fi
+    echo "Filtering by region \`$1\`"
+    for region in $(aws ec2 describe-regions --query "Regions[*].RegionName" --output text | tr "\t" "\n" | grep "$1")
+      do
+        echo "\nListing All Instances in region:'$region'..."
+        aws ec2 describe-instances --region $region \
+          --output table \
+          --query "Reservations[*].Instances[*].{
+                    Instance:InstanceId,
+                    Type:InstanceType,
+                    AZ:Placement.AvailabilityZone,
+                    KeyName:KeyName,
+                    Name:Tags[?Key==\`Name\`]|[0].Value,
+                    IP:PublicIpAddress,
+                    State:State.Name
+                }"
+      done
+  }; f
 
 running-instances = ec2 describe-instances \
     --filter Name=instance-state-name,Values=running \
     --output table \
     --query 'Reservations[].Instances[].{ID: InstanceId,Hostname: PublicDnsName,Name: Tags[?Key==`Name`].Value | [0],Type: InstanceType, Platform: Platform || `Linux`}'
+
 
 ebs-volumes= ec2 describe-volumes \
     --query 'Volumes[].{VolumeId: VolumeId,State: State,Size: Size,Name: Tags[0].Value,AZ: AvailabilityZone}' \
