@@ -134,3 +134,27 @@ revoke-my-ip-all =
   !f() {
     aws revoke-my-ip ${1} all all
   }; f
+
+upgrade = !f() {
+    curl -s "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "/tmp/AWSCLIV2.pkg"
+    sudo installer -pkg /tmp/AWSCLIV2.pkg -target /
+    rm -f /tmp/AWSCLIV2.pkg
+  }; f
+
+check-upgrade = !f() { 
+    rm -f /tmp/AWSCLIV2.pkg
+    latest_cli_version=$(curl -s "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o - | \
+    tar xOv - 2>/dev/null | \
+    grep -a '<pkg-info' | \
+    sed "s#.* version=\"\([0-9\.]*\)\".*#\1#")
+    release_date=$(curl -sI "https://awscli.amazonaws.com/AWSCLIV2.pkg" | \
+        grep 'Last-Modified' | cut -d':' -f 2- | tr '\r\n' ' ')
+    echo "Current version: $(aws --version | cut -d' ' -f 1)"
+    echo "    New version: aws-cli/${latest_cli_version} (${release_date})"
+    if [ "$(aws --version | cut -d' ' -f 1)" != "aws-cli/${latest_cli_version}" ]; then
+      echo "Current version and the new one are different. The upgrade will begin to start..."
+      aws upgrade
+    else
+      echo "Now, you've already installed the latest version!"
+    fi
+  }; f
