@@ -137,7 +137,7 @@ revoke-my-ip-all =
 
 get-elbv2-dnsname =
   !f() {
-    dnsname=$(aws elbv2 describe-load-balancers --names ${1} --query 'LoadBalancers[].DNSName' --output text)
+    dnsname=$(aws elbv2 describe-load-balancers --names "${1:?LoadBalancer name}" --query 'LoadBalancers[].DNSName' --output text)
     zone_id=$(aws route53 list-hosted-zones-by-name --dns-name ${2} --query "HostedZones[?Name=='${2}.'].Id" --output text | cut -d/ -f3)
     echo "Looking up ${1} in Hosted Zone ${2} ($zone_id):"
     aws route53 list-resource-record-sets --hosted-zone-id ${zone_id} --query "ResourceRecordSets[?AliasTarget.DNSName=='${dnsname}.'].Name" --output json | jq -r '.[]'
