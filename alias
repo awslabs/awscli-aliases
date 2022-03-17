@@ -110,7 +110,7 @@ docker-ecr-login =
 
 myip =
   !f() {
-    curl https://checkip.amazonaws.com
+    curl -Ss http://checkip.amazonaws.com
   }; f
 
 allow-my-ip =
